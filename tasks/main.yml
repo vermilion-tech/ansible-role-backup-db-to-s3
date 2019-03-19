@@ -1,0 +1,27 @@
+---
+# Uses docker compose to run a mysqldump on the database service. We then upload
+# that mysqldump to s3 and delete the mysqldump originally generated
+
+- name: Use docker compose to generate a mysqldump on the database service
+  shell: docker-compose exec -T {{ service_name }} mysqldump -u {{ db_user }} -p{{ db_pass }} {{ db_name }} > {{ mysqldump_file_path }}
+  args:
+    chdir: "{{ project_directory }}"
+
+- name: Upload mysqldump to s3
+  block:
+    - aws_s3:
+        aws_access_key: "{{ spaces_access_key }}"
+        aws_secret_key: "{{ spaces_secret_key }}"
+        s3_url: "{{ spaces_endpoint }}"
+        bucket: "{{ space_name }}"
+
+        object: "{{ space_file_path }}"
+        src: "{{ mysqldump_file_path }}"
+
+        encrypt: false
+        rgw: true
+        mode: put
+  always:
+    - file:
+        path: "{{ mysqldump_file_path }}"
+        state: absent
