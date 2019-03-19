@@ -1,0 +1,10 @@
+---
+# vars file for backup-db-to-s3
+
+docker_install_compose: false
+
+pip_install_packages:
+  - docker
+  - docker-compose==1.24.0rc1
+  - boto3
+  - botocore
