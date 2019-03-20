@@ -2,4 +2,4 @@
   become: yes
   become_user: root
   roles:
-    - { role: vermilion_tech.ansible_role_backup_db_to_s3 }
+    - ../ansible-role-backup-db-to-s3
